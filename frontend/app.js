@@ -125,10 +125,82 @@ async function deleteSession(sessionId, el) {
   }
 }
 
+// ── Sample Questions (one per RAG doc) ───────────────────────────
+const SAMPLE_QUESTIONS = [
+  "How does Bitcoin work and what problem does it solve?",
+  "What is Ethereum and how does it differ from Bitcoin?",
+  "How does Decentralized Finance (DeFi) work?",
+  "What are NFTs and how do they work?",
+  "What is a crypto wallet and how do I keep it safe?",
+  "How does blockchain technology work?",
+  "What makes Solana different from other blockchains?",
+  "What is the difference between Proof of Work and Proof of Stake?",
+  "What are the basics of crypto trading and technical analysis?",
+  "What is market cap and why does it matter in crypto?",
+  "How is cryptocurrency regulated and taxed?",
+  "What are stablecoins and how do they maintain their peg?",
+  "What are Layer 2 solutions and why are they needed?",
+  "What is Cardano and what makes it unique?",
+  "What is Polkadot and how does its parachain system work?",
+  "What is Chainlink and what problem does it solve?",
+  "What is Avalanche and how does it achieve fast transactions?",
+  "What are meme coins and why are they so volatile?",
+  "What is the difference between centralized and decentralized exchanges?",
+  "What is Web3 and how does it relate to blockchain?",
+  "What is tokenomics and why does it matter?",
+  "How can I identify and avoid common crypto scams?",
+  "What are Bitcoin ETFs and why are they significant?",
+  "How does crypto lending and borrowing work?",
+  "What is the Bitcoin Lightning Network?",
+  "What are Central Bank Digital Currencies (CBDCs)?",
+  "What is GameFi and how does play-to-earn work?",
+];
+
+function showSampleQuestions() {
+  welcomeScreen.style.display = 'none';
+  appendMessage('user', '-q', []);
+
+  const listItems = SAMPLE_QUESTIONS.map((q, i) =>
+    `<li class="sample-q-item" data-q="${escHtml(q)}">${i + 1}. ${escHtml(q)}</li>`
+  ).join('');
+
+  const el = document.createElement('div');
+  el.className = 'message assistant';
+  el.innerHTML = `
+    <div class="avatar">&#9711;</div>
+    <div class="bubble">
+      <p><strong>Here are all the questions I can answer from my knowledge base:</strong></p>
+      <ul class="sample-q-list">${listItems}</ul>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:8px">Click any question to ask it, or type your own.</p>
+    </div>
+  `;
+
+  el.querySelectorAll('.sample-q-item').forEach(item => {
+    item.addEventListener('click', () => {
+      messageInput.value = item.dataset.q;
+      onInputChange();
+      sendMessage();
+    });
+  });
+
+  messagesList.appendChild(el);
+  scrollToBottom();
+}
+
 // ── Messaging ─────────────────────────────────────────────────────
 async function sendMessage() {
   const text = messageInput.value.trim();
   if (!text || isLoading) return;
+
+  // Intercept -q command
+  if (text === '-q') {
+    messageInput.value = '';
+    messageInput.style.height = 'auto';
+    sendBtn.disabled = true;
+    showSampleQuestions();
+    onInputChange();
+    return;
+  }
 
   isLoading = true;
   welcomeScreen.style.display = 'none';

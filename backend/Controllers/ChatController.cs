@@ -102,8 +102,9 @@ public class ChatController(
         // Load conversation history (last 10 messages)
         var history = await db.ChatMessages
             .Where(m => m.SessionId == session.Id && m.Id != userMessage.Id)
+            .OrderByDescending(m => m.CreatedAt)
+            .Take(10)
             .OrderBy(m => m.CreatedAt)
-            .TakeLast(10)
             .ToListAsync();
 
         // RAG: retrieve relevant context

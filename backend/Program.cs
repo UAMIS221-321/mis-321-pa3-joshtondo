@@ -68,11 +68,17 @@ var app = builder.Build();
 app.UseCors("AllowAll");
 
 // ── Database Init ─────────────────────────────────────────────────
-using (var scope = app.Services.CreateScope())
+try
 {
+    using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
     DbInitializer.Seed(db);
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"[Startup] DB init warning: {ex.Message}");
+    // App continues — DB will be retried on first request
 }
 app.MapControllers();
 

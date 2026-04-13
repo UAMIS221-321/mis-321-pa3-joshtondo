@@ -1,0 +1,15 @@
+# .NET
+backend/bin/
+backend/obj/
+backend/out/
+*.user
+*.suo
+.vs/
+
+# Env / secrets
+.env
+appsettings.Production.json
+
+# OS
+.DS_Store
+Thumbs.db

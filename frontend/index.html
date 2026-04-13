@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptoSage — AI Crypto Assistant</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Config: set this to your Heroku backend URL for production -->
+  <script>
+    window.API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000'
+      : 'https://YOUR-HEROKU-APP.herokuapp.com'; // <-- Replace with your Heroku URL
+  </script>
+
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <span class="logo-icon">&#9711;</span>
+          <span class="logo-text">CryptoSage</span>
+        </div>
+        <button class="new-chat-btn" id="newChatBtn" title="New Chat">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 5v14M5 12h14"/>
+          </svg>
+          New Chat
+        </button>
+      </div>
+
+      <div class="sessions-list" id="sessionsList">
+        <div class="sessions-label">Recent Chats</div>
+        <!-- Populated by JS -->
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="disclaimer">Not financial advice. Always DYOR.</div>
+      </div>
+    </aside>
+
+    <!-- Main chat area -->
+    <main class="chat-area">
+      <!-- Top bar -->
+      <header class="chat-header">
+        <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
+        <div class="header-title">
+          <span class="header-icon">&#9711;</span>
+          <span id="chatTitle">CryptoSage</span>
+        </div>
+        <div class="header-badge">
+          <span class="status-dot"></span>
+          Live Data
+        </div>
+      </header>
+
+      <!-- Messages -->
+      <div class="messages-container" id="messagesContainer">
+        <!-- Welcome screen -->
+        <div class="welcome-screen" id="welcomeScreen">
+          <div class="welcome-logo">&#9711;</div>
+          <h1>CryptoSage</h1>
+          <p>Your AI-powered cryptocurrency assistant. Ask me about prices, market trends, blockchain technology, DeFi, NFTs, and more.</p>
+          <div class="suggestion-grid">
+            <button class="suggestion-chip" data-msg="What is the current price of Bitcoin?">
+              <span class="chip-icon">&#9651;</span>
+              Bitcoin price
+            </button>
+            <button class="suggestion-chip" data-msg="What are the trending cryptocurrencies right now?">
+              <span class="chip-icon">&#128293;</span>
+              Trending coins
+            </button>
+            <button class="suggestion-chip" data-msg="Explain how DeFi works">
+              <span class="chip-icon">&#128279;</span>
+              How DeFi works
+            </button>
+            <button class="suggestion-chip" data-msg="Give me detailed market data for Ethereum">
+              <span class="chip-icon">&#9830;</span>
+              Ethereum data
+            </button>
+            <button class="suggestion-chip" data-msg="What is a crypto wallet and how do I keep it safe?">
+              <span class="chip-icon">&#128274;</span>
+              Wallet security
+            </button>
+            <button class="suggestion-chip" data-msg="What are NFTs and how do they work?">
+              <span class="chip-icon">&#127912;</span>
+              What are NFTs?
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages injected here -->
+        <div id="messagesList"></div>
+        <div id="typingIndicator" class="typing-indicator hidden">
+          <div class="typing-bubble">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="typing-text">CryptoSage is thinking...</span>
+        </div>
+      </div>
+
+      <!-- Input area -->
+      <div class="input-area">
+        <div class="input-wrapper">
+          <textarea
+            id="messageInput"
+            placeholder="Ask about crypto prices, markets, blockchain, DeFi..."
+            rows="1"
+            maxlength="2000"
+          ></textarea>
+          <button class="send-btn" id="sendBtn" disabled title="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="input-hint">Press Enter to send &bull; Shift+Enter for new line</div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

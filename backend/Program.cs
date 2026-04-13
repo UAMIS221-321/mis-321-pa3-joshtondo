@@ -67,19 +67,23 @@ var app = builder.Build();
 // CORS must be first — before routing and controllers
 app.UseCors("AllowAll");
 
-// ── Database Init ─────────────────────────────────────────────────
-try
+// ── Database Init (background — does not block startup) ───────────
+_ = Task.Run(async () =>
 {
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();
-    DbInitializer.Seed(db);
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"[Startup] DB init warning: {ex.Message}");
-    // App continues — DB will be retried on first request
-}
+    await Task.Delay(2000); // give the app time to bind the port first
+    try
+    {
+        using var scope = app.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.EnsureCreated();
+        DbInitializer.Seed(db);
+        Console.WriteLine("[Startup] DB init complete.");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[Startup] DB init warning: {ex.Message}");
+    }
+});
 app.MapControllers();
 
 // Health check endpoint

@@ -11,53 +11,66 @@ public interface IRagService
 
 public class RagService(AppDbContext db, ILogger<RagService> logger) : IRagService
 {
+    private static readonly HashSet<string> StopWords = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "a", "an", "the", "is", "it", "in", "on", "at", "to", "for", "of", "and", "or",
+        "what", "how", "why", "when", "where", "who", "me", "tell", "about", "does", "do",
+        "can", "will", "are", "was", "be", "give", "get", "show", "explain", "i", "my",
+        "please", "help", "with", "this", "that", "some", "more", "much"
+    };
+
     public async Task<string> GetRelevantContextAsync(string query)
     {
         try
         {
-            List<KnowledgeDocument> docs;
-
-            // Try MySQL FULLTEXT search first
-            try
+            var allDocs = await db.KnowledgeDocuments.ToListAsync();
+            if (allDocs.Count == 0)
             {
-                var sanitized = SanitizeQuery(query);
-                docs = await db.KnowledgeDocuments
-                    .FromSqlRaw(
-                        "SELECT * FROM KnowledgeDocuments WHERE MATCH(Title, Content, Keywords) AGAINST({0} IN BOOLEAN MODE) LIMIT 3",
-                        sanitized)
-                    .ToListAsync();
-            }
-            catch
-            {
-                // Fallback: keyword matching on Keywords column
-                docs = [];
+                logger.LogWarning("RAG: No knowledge documents found in database.");
+                return string.Empty;
             }
 
-            // Fallback: simple keyword matching if FULLTEXT returns nothing
-            if (docs.Count == 0)
-            {
-                var queryWords = query.ToLower().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                var allDocs = await db.KnowledgeDocuments.ToListAsync();
-                docs = allDocs
-                    .Select(d => new
-                    {
-                        Doc = d,
-                        Score = queryWords.Count(w =>
-                            d.Keywords.Contains(w, StringComparison.OrdinalIgnoreCase) ||
-                            d.Title.Contains(w, StringComparison.OrdinalIgnoreCase))
-                    })
-                    .Where(x => x.Score > 0)
-                    .OrderByDescending(x => x.Score)
-                    .Take(3)
-                    .Select(x => x.Doc)
-                    .ToList();
-            }
+            var queryWords = query.ToLower()
+                .Split(new[] { ' ', ',', '?', '!', '.', '\'', '"' }, StringSplitOptions.RemoveEmptyEntries)
+                .Where(w => w.Length >= 2 && !StopWords.Contains(w))
+                .ToList();
 
-            if (docs.Count == 0)
+            if (queryWords.Count == 0)
                 return string.Empty;
 
-            var context = string.Join("\n\n---\n\n", docs.Select(d =>
-                $"## {d.Title}\n{d.Content}"));
+            var scored = allDocs.Select(doc =>
+            {
+                var titleLower    = doc.Title.ToLower();
+                var keywordsLower = doc.Keywords.ToLower();
+                var contentLower  = doc.Content.ToLower();
+
+                var score = queryWords.Sum(word =>
+                {
+                    int s = 0;
+                    if (titleLower.Contains(word))    s += 5; // title match = high value
+                    if (keywordsLower.Contains(word)) s += 3; // keyword match
+                    if (contentLower.Contains(word))  s += 1; // content match
+                    return s;
+                });
+
+                return new { Doc = doc, Score = score };
+            })
+            .Where(x => x.Score > 0)
+            .OrderByDescending(x => x.Score)
+            .Take(3)
+            .ToList();
+
+            if (scored.Count == 0)
+            {
+                logger.LogInformation("RAG: No relevant documents for query: {Query}", query);
+                return string.Empty;
+            }
+
+            logger.LogInformation("RAG: Retrieved {Count} docs for query '{Query}': {Titles}",
+                scored.Count, query, string.Join(", ", scored.Select(x => x.Doc.Title)));
+
+            var context = string.Join("\n\n---\n\n", scored.Select(x =>
+                $"## {x.Doc.Title}\n{x.Doc.Content}"));
 
             return $"Relevant knowledge from the knowledge base:\n\n{context}";
         }
@@ -66,16 +79,5 @@ public class RagService(AppDbContext db, ILogger<RagService> logger) : IRagServi
             logger.LogError(ex, "Error retrieving RAG context");
             return string.Empty;
         }
-    }
-
-    private static string SanitizeQuery(string query)
-    {
-        // Extract meaningful words and format for MySQL BOOLEAN mode FULLTEXT search
-        var stopWords = new HashSet<string> { "a", "an", "the", "is", "it", "in", "on", "at", "to", "for", "of", "and", "or", "what", "how", "why", "when", "where", "who" };
-        var words = query.ToLower()
-            .Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Where(w => w.Length > 2 && !stopWords.Contains(w))
-            .Select(w => $"+{w}*");
-        return string.Join(" ", words);
     }
 }

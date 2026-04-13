@@ -15,7 +15,7 @@ public static class DbInitializer
         }
         catch { /* index may already exist */ }
 
-        if (db.KnowledgeDocuments.Any()) return;
+        var existingTitles = db.KnowledgeDocuments.Select(d => d.Title).ToHashSet();
 
         var docs = new List<KnowledgeDocument>
         {
@@ -174,10 +174,209 @@ Types of stablecoins: Fiat-backed (USDT, USDC) are backed 1:1 by dollars in bank
 
 USDT (Tether) is the largest stablecoin by volume and is crucial for crypto market liquidity. USDC (Circle) is considered more transparent and regulated. Regulators worldwide are focused on stablecoin oversight due to their systemic importance — large stablecoin failures could have broad financial market implications.
 """
-            }
+            },
+            new()
+            {
+                Title = "Layer 2 Solutions: Scaling Ethereum",
+                Category = "Technology",
+                Keywords = "layer 2, L2, Polygon, Arbitrum, Optimism, rollups, scaling, gas fees, zkEVM, Base, zkSync, Ethereum scaling",
+                Content = """
+Layer 2 (L2) solutions are networks built on top of Ethereum (Layer 1) that process transactions off-chain and periodically post compressed data back to Ethereum's mainnet. They inherit Ethereum's security while dramatically reducing gas fees and increasing throughput.
+
+The two main L2 types are Optimistic Rollups (Arbitrum, Optimism, Base) and ZK (Zero-Knowledge) Rollups (zkSync, Polygon zkEVM, StarkNet). Optimistic rollups assume transactions are valid by default and use a fraud-proof system for challenges; they have a ~7-day withdrawal delay to mainnet. ZK rollups use cryptographic proofs to verify every transaction batch instantly, enabling faster finality and stronger security guarantees.
+
+Popular L2s include Arbitrum (largest TVL among L2s), Optimism (backed by Coinbase's Base chain), Polygon (originally a sidechain, now building zkEVM), and zkSync. These networks have grown enormously as Ethereum's high gas fees pushed users and developers to seek cheaper alternatives while retaining EVM compatibility.
+"""
+            },
+            new()
+            {
+                Title = "Cardano: Peer-Reviewed Blockchain",
+                Category = "Altcoins",
+                Keywords = "Cardano, ADA, Charles Hoskinson, Ouroboros, proof of stake, Haskell, smart contracts, IOHK, Plutus, academic",
+                Content = """
+Cardano is a third-generation proof-of-stake blockchain founded by Charles Hoskinson, co-founder of Ethereum. It is distinguished by its academic, peer-reviewed approach — all protocol changes and research papers are published and reviewed before implementation. The platform is developed by IOHK, EMURGO, and the Cardano Foundation.
+
+Cardano uses the Ouroboros consensus protocol, the first provably secure PoS consensus mechanism. Its development is broken into eras (Byron, Shelley, Goguen, Basho, Voltaire) each adding new capabilities. Smart contracts were introduced in the Goguen era via the Plutus programming language (based on Haskell).
+
+ADA is Cardano's native token, used for transactions, staking, and governance. The ecosystem includes DeFi protocols, NFT marketplaces, and identity solutions — particularly focused on developing nations for financial inclusion. Cardano is known for its deliberate, methodical development pace.
+"""
+            },
+            new()
+            {
+                Title = "Polkadot and Cross-Chain Interoperability",
+                Category = "Altcoins",
+                Keywords = "Polkadot, DOT, parachain, relay chain, Gavin Wood, cross-chain, interoperability, Substrate, Kusama, Web3 Foundation",
+                Content = """
+Polkadot is a multi-chain network designed to enable different blockchains to interoperate and share security. Founded by Gavin Wood (co-founder of Ethereum), it consists of a central Relay Chain that provides shared security and consensus, and Parachains — specialized blockchains that connect to it and benefit from its security.
+
+Projects bid for parachain slots by locking DOT tokens in a crowdloan auction. Each parachain can be optimized for its specific use case (DeFi, NFTs, identity, etc.) while communicating with others via the Cross-Chain Message Passing (XCMP) protocol. Kusama is Polkadot's "canary network" — a faster, less restricted version used for testing new features.
+
+The Substrate framework allows developers to build custom blockchains that can connect to Polkadot. DOT is used for governance, staking, and bonding for parachain slots. Polkadot addresses a key problem in crypto — blockchain isolation — by allowing assets and data to flow across chains trustlessly.
+"""
+            },
+            new()
+            {
+                Title = "Chainlink: Decentralized Oracle Network",
+                Category = "DeFi",
+                Keywords = "Chainlink, LINK, oracle, price feed, smart contract, real-world data, off-chain, VRF, CCIP, decentralized oracle",
+                Content = """
+Chainlink is the leading decentralized oracle network that connects smart contracts with real-world data, APIs, and off-chain computation. Since smart contracts cannot natively access external data, oracles act as bridges — Chainlink's decentralized approach prevents single points of failure or manipulation.
+
+Chainlink's core products include Price Feeds (used by most major DeFi protocols for asset prices), Verifiable Random Function (VRF) for provably fair randomness in gaming/NFTs, Automation (previously Keepers) for triggering contract functions, and CCIP (Cross-Chain Interoperability Protocol) for cross-chain communication.
+
+LINK is the native token used to pay node operators who retrieve and deliver data. Chainlink secures tens of billions in DeFi TVL across Ethereum, Avalanche, Polygon, and other chains. It is deeply embedded in DeFi infrastructure — protocols like Aave, Compound, and Synthetix depend on Chainlink price feeds for accurate, manipulation-resistant pricing.
+"""
+            },
+            new()
+            {
+                Title = "Avalanche: High-Speed Smart Contract Platform",
+                Category = "Altcoins",
+                Keywords = "Avalanche, AVAX, subnets, C-Chain, X-Chain, P-Chain, consensus, Ava Labs, DeFi, fast finality",
+                Content = """
+Avalanche is a high-performance smart contract platform built by Ava Labs, designed for DeFi and enterprise applications. It achieves near-instant transaction finality (under 2 seconds) through its novel Avalanche consensus protocol — a probabilistic consensus that queries random subsets of validators repeatedly until agreement is reached.
+
+The Avalanche network consists of three built-in blockchains: the X-Chain (for creating and trading assets), C-Chain (EVM-compatible chain for smart contracts), and P-Chain (for validators and subnet coordination). Subnets are custom blockchain networks that can define their own rules, tokens, and virtual machines while benefiting from Avalanche's validator set.
+
+AVAX is the native token used for transaction fees, staking, and subnet creation. The C-Chain's EVM compatibility means Ethereum dApps can easily deploy on Avalanche. The ecosystem includes Trader Joe (DEX), Aave, Benqi (lending), and numerous gaming/NFT projects. Avalanche competes directly with Ethereum as a smart contract platform.
+"""
+            },
+            new()
+            {
+                Title = "Meme Coins: Dogecoin, Shiba Inu, and the Culture of Crypto",
+                Category = "Altcoins",
+                Keywords = "meme coin, Dogecoin, DOGE, Shiba Inu, SHIB, Elon Musk, community, speculative, PEPE, meme culture, viral",
+                Content = """
+Meme coins are cryptocurrencies that originated from internet memes, jokes, or social media trends rather than solving a specific technical problem. Dogecoin (DOGE), launched in 2013 as a joke based on the Shiba Inu dog meme, became the original meme coin and achieved a $90 billion market cap in 2021 — driven largely by Elon Musk's tweets and Reddit communities.
+
+Shiba Inu (SHIB) launched in 2020 as a "Dogecoin killer" and became a massive speculative asset. The SHIB ecosystem expanded to include a DEX (ShibaSwap), NFTs (Shiboshi), and a Layer 2 (Shibarium). PEPE coin launched in 2023 based on the Pepe the Frog meme and quickly reached billions in market cap.
+
+Meme coins are characterized by massive communities, viral marketing, extreme price volatility, and limited fundamental utility. They often lack hard caps on supply and depend on social momentum rather than technology. While some holders have made fortunes, many more have lost money — meme coins are considered among the highest-risk crypto assets. They represent the speculative and community-driven side of crypto culture.
+"""
+            },
+            new()
+            {
+                Title = "Crypto Exchanges: CEX vs DEX",
+                Category = "Trading",
+                Keywords = "exchange, CEX, DEX, Binance, Coinbase, Kraken, Uniswap, order book, KYC, custody, centralized, decentralized exchange",
+                Content = """
+Cryptocurrency exchanges fall into two main categories: Centralized Exchanges (CEX) and Decentralized Exchanges (DEX). CEXs like Binance, Coinbase, and Kraken are operated by companies that hold user funds, require KYC identity verification, and use traditional order books. They offer high liquidity, fiat on/off ramps, and customer support — but users don't control their private keys ("not your keys, not your coins").
+
+DEXs like Uniswap, Curve, and dYdX operate via smart contracts without a central authority. Users trade directly from their wallets, maintaining custody of their funds. Most DEXs use Automated Market Makers (AMMs) with liquidity pools instead of order books. The trade-off: no KYC, no custodial risk, but typically lower liquidity for smaller tokens and higher complexity.
+
+Hybrid approaches include DEX aggregators (1inch, Paraswap) that route orders across multiple DEXs for best price, and CEXs offering on-chain settlement. After the collapse of FTX in 2022 — a major CEX that lost billions in customer funds — there was significant growth in DEX usage as users prioritized self-custody.
+"""
+            },
+            new()
+            {
+                Title = "Web3: The Decentralized Internet",
+                Category = "Technology",
+                Keywords = "Web3, decentralization, dApps, self-sovereign identity, token ownership, ENS, IPFS, MetaMask, read-write-own, internet",
+                Content = """
+Web3 refers to a vision of the internet built on decentralized protocols — primarily blockchains — where users own their data, digital assets, and identity rather than ceding control to centralized platforms. It contrasts with Web1 (read-only static pages) and Web2 (read-write but platform-owned, e.g., Facebook, Google).
+
+Core Web3 concepts include: self-sovereign identity (own your credentials via wallets like MetaMask), token-based ownership (NFTs for digital assets, tokens for governance rights), decentralized storage (IPFS, Arweave), and censorship-resistant applications. ENS (Ethereum Name Service) provides human-readable wallet addresses (.eth domains).
+
+Critics argue Web3 is still largely theoretical, with most "dApps" relying on centralized infrastructure (AWS, Infura, Alchemy) and most users depending on centralized exchanges. Proponents believe it represents a fundamental shift in the ownership model of the internet. Web3 applications span DeFi, NFT marketplaces, decentralized social media (Lens Protocol, Farcaster), and gaming.
+"""
+            },
+            new()
+            {
+                Title = "Tokenomics: Understanding Crypto Token Economics",
+                Category = "Markets",
+                Keywords = "tokenomics, token supply, inflation, deflation, vesting, burn, emission, utility token, governance token, token distribution",
+                Content = """
+Tokenomics (token + economics) describes the economic design of a cryptocurrency — how tokens are created, distributed, and used within an ecosystem. Strong tokenomics align incentives between developers, investors, and users, while poor tokenomics can doom a project regardless of its technology.
+
+Key tokenomics components include: Total Supply (maximum tokens that will ever exist), Circulating Supply (tokens currently available), Emission Schedule (how new tokens are released — fast inflation dilutes value), Vesting (lock-up periods preventing early investors/team from immediately dumping), Token Utility (what the token is actually used for), and Burn Mechanisms (destroying tokens to reduce supply, like Ethereum's EIP-1559 burning base fees).
+
+Governance tokens give holders voting rights on protocol decisions. Utility tokens are used to pay for services. Good tokenomics examples: Bitcoin's fixed 21M supply with halvings, Ethereum's burn mechanism creating deflationary pressure. Bad tokenomics red flags: large team/investor allocations with short vesting, tokens with no real utility, and high inflation rates that erode value.
+"""
+            },
+            new()
+            {
+                Title = "Crypto Scams and Security Threats",
+                Category = "Security",
+                Keywords = "scam, rug pull, phishing, social engineering, honeypot, pump and dump, fake projects, security, fraud, hack, exploit",
+                Content = """
+The crypto space is unfortunately rife with scams and security threats due to irreversible transactions, pseudonymity, and a largely inexperienced user base. Common attack types include: Rug Pulls (developers abandon a project and drain the liquidity pool, often after aggressively marketing it), Phishing (fake websites or emails mimicking legitimate services to steal private keys or seed phrases), and Pump and Dump schemes (coordinated buying to inflate a low-cap coin's price before insiders sell).
+
+Smart contract exploits are a major risk — bugs in contract code can be exploited for millions. Famous hacks include the Ronin Bridge hack ($625M, 2022), Poly Network ($611M, 2021), and numerous DeFi protocol exploits. Honeypots are tokens where the contract allows buying but not selling, trapping investors. Social engineering attacks impersonate support staff or celebrities to steal funds.
+
+Protection strategies: verify URLs carefully (bookmark official sites), never share seed phrases or private keys with anyone, use hardware wallets for large holdings, check contract audits before investing in DeFi, be skeptical of unsolicited DMs, verify project teams, and remember — if it sounds too good to be true (100x guaranteed returns), it almost certainly is.
+"""
+            },
+            new()
+            {
+                Title = "Bitcoin ETFs and Institutional Adoption",
+                Category = "Markets",
+                Keywords = "Bitcoin ETF, institutional, BlackRock, Fidelity, spot ETF, MicroStrategy, grayscale, GBTC, corporate treasury, adoption",
+                Content = """
+In January 2024, the SEC approved spot Bitcoin ETFs in the United States — a landmark moment for crypto adoption. Products from BlackRock (iShares Bitcoin Trust, IBIT), Fidelity, and others launched, attracting billions in inflows within weeks. ETFs allow traditional investors to gain Bitcoin exposure through regulated brokerage accounts without holding crypto directly.
+
+Institutional adoption has accelerated significantly. MicroStrategy (now Strategy), led by Michael Saylor, holds over 200,000 BTC as a corporate treasury reserve strategy. Tesla, Block, and other public companies have added Bitcoin to their balance sheets. Hedge funds, endowments, and pension funds have begun allocating small percentages to Bitcoin as a portfolio diversifier.
+
+The ETF approval is considered a turning point because it provides regulated, insured exposure that institutional compliance requirements demand. Unlike futures-based ETFs (which existed since 2021), spot ETFs directly hold Bitcoin — creating real buying pressure on the market. The narrative around Bitcoin as "digital gold" and an inflation hedge has driven much of the institutional interest.
+"""
+            },
+            new()
+            {
+                Title = "Crypto Lending, Borrowing, and Yield",
+                Category = "DeFi",
+                Keywords = "lending, borrowing, yield, interest, Aave, Compound, collateral, liquidation, APY, APR, staking rewards, passive income",
+                Content = """
+Crypto lending allows holders to earn interest on their assets by supplying them to lending protocols or centralized platforms. In DeFi, protocols like Aave and Compound use smart contracts — suppliers deposit assets into pools and borrowers take over-collateralized loans (typically 150%+ collateral required). Interest rates adjust algorithmically based on supply/demand.
+
+Yield sources in crypto include: Lending interest (supplying assets to DeFi protocols), Staking rewards (validating transactions in PoS networks, typically 4-15% APY), Liquidity provision (earning trading fees by supplying to DEX pools), and Yield farming (moving assets between protocols to maximize returns).
+
+Critical risks: Smart contract bugs can drain entire protocols. Liquidation risk — if collateral value drops below the threshold, positions are automatically liquidated. Centralized lending platforms (Celsius, BlockFi, Voyager) collapsed in 2022, causing billions in losses for users. Impermanent loss affects liquidity providers when asset prices diverge. High APY (100%+) is usually unsustainable and often indicates token inflation or Ponzi-like mechanics.
+"""
+            },
+            new()
+            {
+                Title = "Bitcoin Lightning Network: Instant Payments",
+                Category = "Bitcoin",
+                Keywords = "Lightning Network, Bitcoin payments, payment channels, micropayments, fast, cheap, off-chain, LN, routing, node",
+                Content = """
+The Lightning Network is a Layer 2 payment protocol built on Bitcoin that enables near-instant, near-free transactions. Since Bitcoin's base layer processes only ~7 transactions per second with 10-minute confirmation times, the Lightning Network solves Bitcoin's scalability problem for everyday payments.
+
+Lightning works through payment channels — two parties lock Bitcoin into a 2-of-2 multisig address and can then transact instantly off-chain, updating their balance sheet without broadcasting to the blockchain. Payments can route through multiple channels to reach any recipient. Only the opening and closing of channels are recorded on-chain.
+
+Key stats: Lightning Network capacity has grown to over 5,000 BTC. Apps like Strike, Cash App, and Wallet of Satoshi make Lightning payments accessible to everyday users. El Salvador's Bitcoin legal tender adoption relies heavily on Lightning for retail payments. The network enables micropayments as small as 1 satoshi (~$0.0003), enabling new use cases like streaming payments, content monetization, and machine-to-machine payments.
+"""
+            },
+            new()
+            {
+                Title = "Central Bank Digital Currencies (CBDCs)",
+                Category = "Regulation",
+                Keywords = "CBDC, central bank digital currency, digital dollar, digital yuan, e-CNY, government, monetary policy, privacy, programmable money",
+                Content = """
+Central Bank Digital Currencies (CBDCs) are digital forms of a country's fiat currency issued and controlled by the central bank. Unlike cryptocurrencies, CBDCs are fully centralized, government-controlled, and maintain the same value as the physical currency. Over 130 countries representing 98% of global GDP are exploring or piloting CBDCs.
+
+China leads with the e-CNY (digital yuan), already deployed to millions of users. The European Central Bank is developing a digital euro. The US Federal Reserve has researched a digital dollar but faces political opposition. The Bahamas launched the Sand Dollar — the world's first live retail CBDC.
+
+CBDCs offer potential benefits: financial inclusion for the unbanked, faster payment settlement, reduced cash handling costs, and better monetary policy transmission. However, critics raise serious privacy concerns — governments could monitor every transaction, set expiration dates on currency, restrict spending categories, or implement negative interest rates programmatically. The tension between CBDC efficiency and surveillance capabilities has made them controversial within the crypto community, which values financial privacy and censorship resistance.
+"""
+            },
+            new()
+            {
+                Title = "GameFi and Play-to-Earn Gaming",
+                Category = "NFTs",
+                Keywords = "GameFi, play-to-earn, P2E, Axie Infinity, gaming, NFT, in-game assets, metaverse, blockchain gaming, Illuvium, Gods Unchained",
+                Content = """
+GameFi combines blockchain technology with gaming, allowing players to earn real economic value through gameplay. In play-to-earn (P2E) games, in-game assets (characters, land, items) exist as NFTs that players truly own and can trade. Earned in-game currencies are often real tokens tradeable on exchanges.
+
+Axie Infinity pioneered the P2E model — at its 2021 peak, players in developing countries earned more from the game than local wages. The game's SLP and AXS tokens reached billions in market cap. However, the model proved unsustainable as token inflation and declining player growth collapsed token prices. The Ronin bridge hack ($625M) further damaged the ecosystem.
+
+Newer models try to balance "fun-first" gameplay with economic incentives. Games like Gods Unchained, Illuvium, and Parallel are focusing on genuine gameplay quality. The metaverse concept — persistent 3D virtual worlds with blockchain-based economies — encompasses platforms like Decentraland and The Sandbox where virtual land sells for millions. Despite hype cycles, sustainable blockchain gaming remains an evolving challenge.
+"""
+            },
         };
 
-        db.KnowledgeDocuments.AddRange(docs);
-        db.SaveChanges();
+        var newDocs = docs.Where(d => !existingTitles.Contains(d.Title)).ToList();
+        if (newDocs.Count > 0)
+        {
+            db.KnowledgeDocuments.AddRange(newDocs);
+            db.SaveChanges();
+        }
     }
 }

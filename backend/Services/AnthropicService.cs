@@ -119,6 +119,7 @@ public class AnthropicService(
 
             var response = JsonSerializer.Deserialize<AnthropicApiResponse>(respJson, new JsonSerializerOptions
             {
+                PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
                 PropertyNameCaseInsensitive = true
             });
 
@@ -183,7 +184,7 @@ public class AnthropicService(
     private static List<object> BuildMessages(List<ChatMessage> history, string userMessage)
     {
         var messages = new List<object>();
-        foreach (var msg in history.TakeLast(10))
+        foreach (var msg in history)
         {
             messages.Add(new { role = msg.Role, content = (object)msg.Content });
         }
@@ -207,16 +208,28 @@ public class AnthropicService(
     // Internal deserialization models
     private class AnthropicApiResponse
     {
+        [JsonPropertyName("stop_reason")]
         public string StopReason { get; set; } = string.Empty;
+
+        [JsonPropertyName("content")]
         public List<ResponseBlock> Content { get; set; } = [];
     }
 
     private class ResponseBlock
     {
+        [JsonPropertyName("type")]
         public string Type { get; set; } = string.Empty;
+
+        [JsonPropertyName("text")]
         public string? Text { get; set; }
+
+        [JsonPropertyName("id")]
         public string? Id { get; set; }
+
+        [JsonPropertyName("name")]
         public string? Name { get; set; }
+
+        [JsonPropertyName("input")]
         public Dictionary<string, JsonElement>? Input { get; set; }
     }
 }

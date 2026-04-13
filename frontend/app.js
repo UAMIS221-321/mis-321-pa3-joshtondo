@@ -1,7 +1,7 @@
 'use strict';
 
 // ── Config ───────────────────────────────────────────────────────
-const API = window.API_BASE_URL || 'http://localhost:5000';
+const API = (window.API_BASE_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 // ── State ────────────────────────────────────────────────────────
 let currentSessionId = null;

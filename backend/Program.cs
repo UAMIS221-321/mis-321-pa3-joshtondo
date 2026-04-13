@@ -54,11 +54,15 @@ builder.Services.AddControllers();
 // ── CORS ──────────────────────────────────────────────────────────
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("AllowAll", policy =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 });
 
 var app = builder.Build();
+
+// ── Middleware ────────────────────────────────────────────────────
+// CORS must be first — before routing and controllers
+app.UseCors("AllowAll");
 
 // ── Database Init ─────────────────────────────────────────────────
 using (var scope = app.Services.CreateScope())
@@ -67,9 +71,6 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
     DbInitializer.Seed(db);
 }
-
-// ── Middleware ────────────────────────────────────────────────────
-app.UseCors();
 app.MapControllers();
 
 // Health check endpoint

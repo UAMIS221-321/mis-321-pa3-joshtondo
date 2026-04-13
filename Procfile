@@ -1,1 +1,1 @@
-web: ./CryptoBot
+web: dotnet CryptoBot.dll

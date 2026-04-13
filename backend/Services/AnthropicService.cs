@@ -160,22 +160,34 @@ public class AnthropicService(
     private static string BuildSystemPrompt(string ragContext)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("You are CryptoSage, an expert cryptocurrency assistant. You help users understand crypto markets, blockchain technology, DeFi, NFTs, trading strategies, and the broader crypto ecosystem.");
+        sb.AppendLine("You are CryptoSage, a cryptocurrency assistant that answers questions STRICTLY from the provided knowledge base and real-time API data.");
         sb.AppendLine();
-        sb.AppendLine("You have access to real-time crypto price data via tools. Use them when users ask about current prices, market data, or trending coins.");
-        sb.AppendLine();
-        sb.AppendLine("Guidelines:");
-        sb.AppendLine("- Be accurate, helpful, and explain complex concepts clearly");
-        sb.AppendLine("- Always note that crypto investments carry risk and this is not financial advice");
-        sb.AppendLine("- Use the knowledge base context below when relevant");
-        sb.AppendLine("- Format numbers clearly (e.g., $45,230.50 for prices, $1.2T for large numbers)");
 
-        if (!string.IsNullOrWhiteSpace(ragContext))
+        if (string.IsNullOrWhiteSpace(ragContext))
         {
+            // No RAG context found — instruct the model to say it doesn't know
+            sb.AppendLine("No relevant knowledge base documents were found for this query.");
             sb.AppendLine();
-            sb.AppendLine("--- KNOWLEDGE BASE CONTEXT ---");
+            sb.AppendLine("STRICT RULE: Since there is no knowledge base context available, you must respond with:");
+            sb.AppendLine("\"I don't know — this topic isn't covered in my knowledge base.\"");
+            sb.AppendLine();
+            sb.AppendLine("EXCEPTION: If the user is asking for a live cryptocurrency price or market data, you MAY use your tools to fetch it. In that case, answer using only the tool result and cite 'CoinGecko API (live data)' as your source.");
+        }
+        else
+        {
+            sb.AppendLine("STRICT RULES:");
+            sb.AppendLine("1. Answer ONLY using the knowledge base sources provided below and/or live data from your tools.");
+            sb.AppendLine("2. Do NOT use any outside knowledge beyond what is in the sources.");
+            sb.AppendLine("3. You MAY call your tools (CoinGecko API) to supplement a knowledge base answer with live price data.");
+            sb.AppendLine("4. At the END of every response, include a '**Sources:**' section listing exactly which sources you used.");
+            sb.AppendLine("   - List each knowledge base document title you referenced (e.g., '- Bitcoin: Origins and Technology')");
+            sb.AppendLine("   - If you called the CoinGecko API, add '- CoinGecko API (live data)'");
+            sb.AppendLine("5. Format numbers clearly (e.g., $45,230.50 for prices, $1.2T for large numbers).");
+            sb.AppendLine("6. Note that crypto investments carry risk and this is not financial advice.");
+            sb.AppendLine();
+            sb.AppendLine("--- KNOWLEDGE BASE SOURCES ---");
             sb.AppendLine(ragContext);
-            sb.AppendLine("--- END KNOWLEDGE BASE CONTEXT ---");
+            sb.AppendLine("--- END KNOWLEDGE BASE SOURCES ---");
         }
 
         return sb.ToString();

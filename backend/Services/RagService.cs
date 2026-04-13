@@ -69,10 +69,10 @@ public class RagService(AppDbContext db, ILogger<RagService> logger) : IRagServi
             logger.LogInformation("RAG: Retrieved {Count} docs for query '{Query}': {Titles}",
                 scored.Count, query, string.Join(", ", scored.Select(x => x.Doc.Title)));
 
-            var context = string.Join("\n\n---\n\n", scored.Select(x =>
-                $"## {x.Doc.Title}\n{x.Doc.Content}"));
+            var context = string.Join("\n\n---\n\n", scored.Select((x, i) =>
+                $"[SOURCE {i + 1}: {x.Doc.Title}]\n{x.Doc.Content}"));
 
-            return $"Relevant knowledge from the knowledge base:\n\n{context}";
+            return context;
         }
         catch (Exception ex)
         {

@@ -98,7 +98,16 @@ public class ChatController(
         var ragContext = await rag.GetRelevantContextAsync(request.Message);
 
         // Call Claude
-        var (assistantText, toolResults) = await anthropic.ChatAsync(request.Message, history, ragContext);
+        string assistantText;
+        List<ToolCallResult> toolResults;
+        try
+        {
+            (assistantText, toolResults) = await anthropic.ChatAsync(request.Message, history, ragContext);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name });
+        }
 
         // Save assistant message
         var assistantMessage = new ChatMessage

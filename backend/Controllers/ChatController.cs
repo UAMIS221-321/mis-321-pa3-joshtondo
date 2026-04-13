@@ -56,6 +56,18 @@ public class ChatController(
     [HttpPost]
     public async Task<ActionResult<ChatResponse>> SendMessage([FromBody] ChatRequest request)
     {
+        try
+        {
+            return await SendMessageInternal(request);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, type = ex.GetType().Name, inner = ex.InnerException?.Message });
+        }
+    }
+
+    private async Task<ActionResult<ChatResponse>> SendMessageInternal(ChatRequest request)
+    {
         if (string.IsNullOrWhiteSpace(request.Message))
             return BadRequest("Message cannot be empty.");
 
@@ -122,7 +134,6 @@ public class ChatController(
 
         return Ok(new ChatResponse(session.Id, assistantText, "assistant", toolResults));
     }
-
     // DELETE /api/chat/session/{sessionId}
     [HttpDelete("session/{sessionId}")]
     public async Task<IActionResult> DeleteSession(string sessionId)

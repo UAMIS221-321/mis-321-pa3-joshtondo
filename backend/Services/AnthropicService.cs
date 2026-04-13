@@ -160,30 +160,23 @@ public class AnthropicService(
     private static string BuildSystemPrompt(string ragContext)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("You are CryptoSage, a cryptocurrency assistant that answers questions STRICTLY from the provided knowledge base and real-time API data.");
+        sb.AppendLine("You are CryptoSage, a cryptocurrency assistant.");
         sb.AppendLine();
+        sb.AppendLine("STRICT RULES — follow these exactly:");
+        sb.AppendLine("1. Answer ONLY from the knowledge base sources provided. Do NOT use outside knowledge.");
+        sb.AppendLine("2. If no knowledge base context is provided, respond with exactly: \"I don't know — this topic isn't covered in my knowledge base.\"");
+        sb.AppendLine("3. NEVER call any tools (CoinGecko API) automatically. You may only call a tool if the user has explicitly asked for live or current price/market data in their message.");
+        sb.AppendLine("   - If you think live data might be helpful but the user has NOT explicitly asked for it, ask them first: 'Would you like me to fetch the live price/market data for this?'");
+        sb.AppendLine("   - Only call a tool after the user confirms they want live data.");
+        sb.AppendLine("4. At the END of every response (including when you ask a clarifying question), include a '**Sources:**' section:");
+        sb.AppendLine("   - List each knowledge base document title you used (e.g., '- Bitcoin: Origins and Technology')");
+        sb.AppendLine("   - If you called the CoinGecko API, add '- CoinGecko API (live data)'");
+        sb.AppendLine("   - If no sources were used, write '- None'");
+        sb.AppendLine("5. Format numbers clearly (e.g., $45,230.50 for prices, $1.2T for large numbers).");
+        sb.AppendLine("6. Always note that crypto investments carry risk and this is not financial advice.");
 
-        if (string.IsNullOrWhiteSpace(ragContext))
+        if (!string.IsNullOrWhiteSpace(ragContext))
         {
-            // No RAG context found — instruct the model to say it doesn't know
-            sb.AppendLine("No relevant knowledge base documents were found for this query.");
-            sb.AppendLine();
-            sb.AppendLine("STRICT RULE: Since there is no knowledge base context available, you must respond with:");
-            sb.AppendLine("\"I don't know — this topic isn't covered in my knowledge base.\"");
-            sb.AppendLine();
-            sb.AppendLine("EXCEPTION: If the user is asking for a live cryptocurrency price or market data, you MAY use your tools to fetch it. In that case, answer using only the tool result and cite 'CoinGecko API (live data)' as your source.");
-        }
-        else
-        {
-            sb.AppendLine("STRICT RULES:");
-            sb.AppendLine("1. Answer ONLY using the knowledge base sources provided below and/or live data from your tools.");
-            sb.AppendLine("2. Do NOT use any outside knowledge beyond what is in the sources.");
-            sb.AppendLine("3. You MAY call your tools (CoinGecko API) to supplement a knowledge base answer with live price data.");
-            sb.AppendLine("4. At the END of every response, include a '**Sources:**' section listing exactly which sources you used.");
-            sb.AppendLine("   - List each knowledge base document title you referenced (e.g., '- Bitcoin: Origins and Technology')");
-            sb.AppendLine("   - If you called the CoinGecko API, add '- CoinGecko API (live data)'");
-            sb.AppendLine("5. Format numbers clearly (e.g., $45,230.50 for prices, $1.2T for large numbers).");
-            sb.AppendLine("6. Note that crypto investments carry risk and this is not financial advice.");
             sb.AppendLine();
             sb.AppendLine("--- KNOWLEDGE BASE SOURCES ---");
             sb.AppendLine(ragContext);

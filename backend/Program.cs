@@ -18,7 +18,7 @@ static string GetConnectionString(IConfiguration config)
             var uri = new Uri(jawsDbUrl);
             var userInfo = uri.UserInfo.Split(':');
             var database = uri.AbsolutePath.TrimStart('/');
-            return $"Server={uri.Host};Port={uri.Port};Database={database};User={userInfo[0]};Password={userInfo[1]};AllowPublicKeyRetrieval=true;SslMode=None;";
+            return $"Server={uri.Host};Port={uri.Port};Database={database};User={userInfo[0]};Password={userInfo[1]};AllowPublicKeyRetrieval=true;SslMode=Preferred;";
         }
         catch
         {
@@ -32,8 +32,11 @@ static string GetConnectionString(IConfiguration config)
 
 var connectionString = GetConnectionString(builder.Configuration);
 
+// Use hardcoded MySQL 8.0 version — AutoDetect makes a live connection at startup
+// which crashes the app if the DB isn't reachable yet
+var serverVersion = new MySqlServerVersion(new Version(8, 0, 36));
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+    options.UseMySql(connectionString, serverVersion,
         mySqlOptions => mySqlOptions.EnableRetryOnFailure(3)));
 
 // ── Services ─────────────────────────────────────────────────────
